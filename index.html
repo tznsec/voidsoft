@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VO!DSOFT — ESP32 Flasher</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&display=swap"
+    rel="stylesheet"
+  />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://esm.sh/three@0.170.0",
+        "three/addons/": "https://esm.sh/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Splash Screen -->
+  <div class="splash-screen" id="splashScreen" aria-label="Ładowanie VO!DSOFT">
+    <div class="splash-shockwave" aria-hidden="true"></div>
+    <div class="splash-inner">
+      <div class="splash-logo">
+        <svg viewBox="0 0 120 120" width="96" height="96" fill="none">
+          <defs>
+            <linearGradient id="voidGrad" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#d9f99d"/>
+              <stop offset="100%" stop-color="#22d3ee"/>
+            </linearGradient>
+          </defs>
+          <polygon class="splash-hex" points="60,6 110,33 110,87 60,114 10,87 10,33" stroke="url(#voidGrad)" stroke-width="3" fill="rgba(217,249,157,0.04)"/>
+          <path class="splash-v" d="M31 36L51 84L61 58" stroke="#fafafa" stroke-width="7" stroke-linecap="square" stroke-linejoin="miter"/>
+          <path class="splash-bang" d="M77 32V68" stroke="#d9f99d" stroke-width="8" stroke-linecap="square"/>
+          <rect class="splash-dot" x="72" y="76" width="10" height="10" fill="#22d3ee"/>
+        </svg>
+      </div>
+      <div class="splash-wordmark">VO<span>!</span>DSOFT</div>
+      <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- Ambient Backdrop -->
+  <div class="ambient-grid" aria-hidden="true"></div>
+  <div class="ambient-orb orb-1" aria-hidden="true"></div>
+  <div class="ambient-orb orb-2" aria-hidden="true"></div>
+
+  <!-- Top Navigation -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="38" height="38" fill="none">
+          <defs>
+            <linearGradient id="navGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#d9f99d"/>
+              <stop offset="100%" stop-color="#22d3ee"/>
+            </linearGradient>
+          </defs>
+          <polygon points="24,3 44,14 44,34 24,45 4,34 4,14" stroke="url(#navGrad)" stroke-width="2.2" fill="rgba(217,249,157,0.05)"/>
+          <path d="M13 15L21 34L25 23" stroke="#fafafa" stroke-width="3.2" stroke-linecap="square"/>
+          <path d="M31 13V28" stroke="#d9f99d" stroke-width="3.6" stroke-linecap="square"/>
+          <rect x="29" y="31.5" width="4" height="4" fill="#22d3ee"/>
+        </svg>
+      </div>
+      <span class="brand-name">VO<span class="brand-bang">!</span>DSOFT</span>
+    </div>
+
+    <nav class="nav-pill-group" id="navGroup" aria-label="Nawigacja">
+      <div class="nav-indicator" id="navIndicator" aria-hidden="true"></div>
+      <button class="nav-btn active" data-page-target="flasher">⚡ Flasher</button>
+      <button class="nav-btn" data-page-target="library">◈ Firmware</button>
+      <button class="nav-btn" data-page-target="pinout">⊞ Pinout</button>
+      <button class="nav-btn" data-page-target="monitor">▸_ Monitor</button>
+    </nav>
+
+    <div class="header-actions">
+      <button class="btn btn-sm btn-ghost sfx-btn active" id="sfxBtn" title="Dźwięki UI">🔊</button>
+      <div class="conn-pill" id="connPill">
+        <span class="pulse-dot" id="connDot"></span>
+        <span id="connLabel">OFFLINE</span>
+      </div>
+      <button class="btn btn-lime" id="connectBtn">Połącz USB</button>
+      <button class="btn btn-ghost" id="disconnectBtn" disabled>Rozłącz</button>
+    </div>
+  </header>
+
+  <main class="shell">
+    <!-- PAGE 1: FLASHER 3D -->
+    <section class="page active" id="page-flasher">
+      <div class="flasher-grid">
+        <!-- LEFT: 3D Hardware Stage + Progress + Actions -->
+        <div class="col-stack">
+          <div class="card stage-card spotlight-card">
+            <div class="card-head">
+              <div class="head-title">
+                <span class="eyebrow-dot"></span>
+                <h2 id="hudBoardName">CYD ESP32-2432S024/S028</h2>
+              </div>
+              <div class="cam-controls">
+                <button class="cam-btn active" data-cam="iso">ISO</button>
+                <button class="cam-btn" data-cam="front">FRONT</button>
+                <button class="cam-btn" data-cam="back">BACK</button>
+                <button class="cam-btn" data-cam="usb">USB</button>
+                <span class="cam-sep"></span>
+                <button class="cam-btn cam-fx" id="explodeBtn" title="Rozłóż warstwy 3D">EXPLODE</button>
+                <button class="cam-btn cam-fx" id="xrayBtn" title="Hologram X-Ray">X-RAY</button>
+                <button class="cam-btn active" id="autoRotateBtn" title="Auto-obrót">↻</button>
+                <button class="cam-btn" id="theaterBtn" title="Pełny ekran 3D">⛶</button>
+              </div>
+            </div>
+
+            <div class="viewport-3d" id="viewport3d">
+              <div class="viewport-hud-tr">
+                <span class="hud-led" id="hudStateBadge">IDLE</span>
+              </div>
+              <div class="viewport-hud-bottom">
+                <div class="metric-box">
+                  <span>TX</span>
+                  <strong id="txStat">0 KB</strong>
+                </div>
+                <div class="metric-box">
+                  <span>SPEED</span>
+                  <strong id="speedStat">0 KB/s</strong>
+                </div>
+                <div class="metric-box spark-box">
+                  <canvas id="speedSparkline" width="120" height="26"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- Kinetic Progress Bar -->
+            <div class="progress-panel">
+              <div class="progress-head">
+                <span id="progressText">Gotowy</span>
+                <strong class="progress-pct" id="progressPct">0%</strong>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" id="progressFill" style="width: 0%">
+                  <div class="progress-glint"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Primary Hardware Actions -->
+            <div class="action-row">
+              <button class="btn btn-lime btn-hero" id="flashBtn">
+                <span class="btn-shine"></span>
+                <span>⚡ Flash</span>
+              </button>
+              <button class="btn btn-danger" id="eraseBtn">Erase</button>
+              <button class="btn btn-ghost" id="resetBtn">Reset</button>
+            </div>
+          </div>
+
+          <!-- Terminal Console -->
+          <div class="card console-card spotlight-card">
+            <div class="card-head">
+              <div class="head-title">
+                <span class="eyebrow-dot cyan"></span>
+                <h2>Konsola</h2>
+              </div>
+              <div class="console-head-right">
+                <span class="meta-chip" id="macDisplay">MAC: --:--:--:--:--:--</span>
+                <button class="btn btn-sm btn-ghost" id="clearLogBtn">Wyczyść</button>
+              </div>
+            </div>
+            <div class="console-output" id="flashLog" role="log" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <!-- RIGHT: 3 Real Boards + Config + Real .bin Dropzone -->
+        <div class="col-stack">
+          <div class="card spotlight-card">
+            <div class="card-head">
+              <div class="head-title">
+                <span class="eyebrow-dot"></span>
+                <h2>Płytka</h2>
+              </div>
+              <span class="badge-chip" id="chipDetected">ESP32</span>
+            </div>
+
+            <div class="board-selector-grid" id="boardCards">
+              <button class="board-chip active" data-board="cyd">
+                <strong>CYD 2.4" / 2.8"</strong>
+                <span>ESP32-2432S024 / S028</span>
+              </button>
+              <button class="board-chip" data-board="d1mini">
+                <strong>Wemos D1 Mini</strong>
+                <span>ESP32 / ESP8266</span>
+              </button>
+              <button class="board-chip" data-board="waveshare147">
+                <strong>Waveshare 1.47B</strong>
+                <span>ESP32-S3 LCD</span>
+              </button>
+            </div>
+
+            <div class="form-grid">
+              <label class="field">
+                <span>Baud Rate</span>
+                <select id="baudSelect">
+                  <option value="115200">115200</option>
+                  <option value="460800">460800</option>
+                  <option value="921600" selected>921600</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Flash Mode</span>
+                <select id="flashModeSelect">
+                  <option value="dio" selected>DIO</option>
+                  <option value="qio">QIO</option>
+                  <option value="dout">DOUT</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Flash Freq</span>
+                <select id="flashFreqSelect">
+                  <option value="40m">40 MHz</option>
+                  <option value="80m" selected>80 MHz</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Kompresja</span>
+                <select id="compressSelect">
+                  <option value="true" selected>Zlib ON</option>
+                  <option value="false">RAW</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="card spotlight-card">
+            <div class="card-head">
+              <div class="head-title">
+                <span class="eyebrow-dot cyan"></span>
+                <h2>Firmware (.bin)</h2>
+              </div>
+              <span class="meta-chip" id="partCountSummary">0 plików</span>
+            </div>
+
+            <div class="dropzone" id="dropzone">
+              <input type="file" id="fileInput" accept=".bin" multiple hidden />
+              <div class="dropzone-glyph">⇣</div>
+              <p>Upuść pliki <strong>.bin</strong> lub <button type="button" class="link-btn" id="browseBtn">wybierz</button></p>
+            </div>
+
+            <div class="partition-list" id="partitionList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 2: FIRMWARE HUB -->
+    <section class="page" id="page-library">
+      <div class="card spotlight-card">
+        <div class="card-head">
+          <div class="head-title">
+            <span class="eyebrow-dot"></span>
+            <h2>Firmware Hub</h2>
+          </div>
+          <div class="hub-head-actions">
+            <button class="btn btn-sm btn-lime" id="hubAddBtn">+ Dodaj plik .bin</button>
+            <input type="file" id="hubFileInput" accept=".bin" multiple hidden />
+          </div>
+        </div>
+
+        <!-- Search & Board Filters -->
+        <div class="hub-toolbar">
+          <div class="hub-search-wrap">
+            <span class="search-icon">⌕</span>
+            <input
+              type="text"
+              id="hubSearch"
+              placeholder="Szukaj firmware (np. VoidFox, CatHack, TZNUSB, DuckyScript, Wi-Fi IDS, Waveshare)..."
+              autocomplete="off"
+            />
+          </div>
+          <div class="hub-filters" id="hubFilters">
+            <button class="cam-btn active" data-hub-board="all">Wszystkie</button>
+            <button class="cam-btn" data-hub-board="waveshare147">Waveshare 1.47B</button>
+            <button class="cam-btn" data-hub-board="cyd">CYD 2.4/2.8"</button>
+            <button class="cam-btn" data-hub-board="d1mini">Wemos D1 Mini</button>
+          </div>
+        </div>
+
+        <div class="firmware-grid" id="firmwareGrid"></div>
+      </div>
+    </section>
+
+    <!-- PAGE 3: PINOUT LAB -->
+    <section class="page" id="page-pinout">
+      <div class="card spotlight-card">
+        <div class="card-head">
+          <div class="head-title">
+            <span class="eyebrow-dot cyan"></span>
+            <h2>Pinout</h2>
+          </div>
+          <div class="pinout-tabs">
+            <button class="btn btn-sm btn-lime pinout-tab active" data-pinout="cyd">CYD 2432S024 / S028</button>
+            <button class="btn btn-sm btn-ghost pinout-tab" data-pinout="d1mini">Wemos D1 Mini</button>
+            <button class="btn btn-sm btn-ghost pinout-tab" data-pinout="waveshare147">Waveshare 1.47B</button>
+          </div>
+        </div>
+
+        <div class="pinout-layout">
+          <div class="pinout-diagram" id="pinoutDiagram"></div>
+          <div class="pinout-sidebar">
+            <div class="pin-inspector" id="pinInspector">
+              <span class="badge-chip">PIN</span>
+              <h4>Wybierz pin</h4>
+              <p>Kliknij pin na schemacie.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 4: UART SERIAL MONITOR -->
+    <section class="page" id="page-monitor">
+      <div class="card spotlight-card">
+        <div class="card-head">
+          <div class="head-title">
+            <span class="eyebrow-dot"></span>
+            <h2>UART Monitor</h2>
+          </div>
+          <div class="monitor-controls">
+            <select id="monitorBaud">
+              <option value="9600">9600</option>
+              <option value="115200" selected>115200</option>
+              <option value="921600">921600</option>
+            </select>
+            <button class="btn btn-sm btn-ghost" id="monitorExportBtn">Eksport .log</button>
+            <button class="btn btn-sm btn-ghost" id="monitorClearBtn">Wyczyść</button>
+          </div>
+        </div>
+        <div class="console-output monitor-output" id="monitorOutput"></div>
+        <form class="monitor-input-row" id="monitorForm">
+          <input type="text" id="monitorInput" placeholder="Komenda UART..." autocomplete="off" />
+          <button type="submit" class="btn btn-lime">Wyślij ↵</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
