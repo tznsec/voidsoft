@@ -48,6 +48,28 @@ const CATALOG_FIRMWARES = [
     ],
     tags: ['CYD 2.8"', 'ESP32-2432S028', 'Wi-Fi Tools', 'BLE HID', 'DuckyScript', 'SD Boot', 'UI PL', 'All-in-One 0x0'],
   },
+  {
+    id: 'esp8266-deauther-261-d1mini',
+    title: 'ESP8266 Deauther 2.6.1',
+    author: 'by Spacehuhn Tech (v2.6.1)',
+    board: 'd1mini',
+    boardLabel: 'Wemos D1 Mini (ESP8266)',
+    filename: 'ESP8266_DEAUTHER_2.6.1_WEMOS_D1_MINI.bin',
+    url: './firmware/ESP8266_DEAUTHER_2.6.1_WEMOS_D1_MINI.bin',
+    offset: '0x0',
+    sizeBytes: 833552,
+    summary:
+      'Najnowsze oficjalne wydanie (2.6.1) projektu SpacehuhnTech/esp8266_deauther dla Wemos D1 Mini z ESP8266. Narzędzie edukacyjne do testowania sieci 802.11: skanowanie, deauth, fake AP i probe flood. Źródło: github.com/SpacehuhnTech/esp8266_deauther. Tylko na własne sieci i urządzenia!',
+    features: [
+      ['Skaner Wi-Fi', 'Podgląd pobliskich access pointów i klientów w czasie rzeczywistym (2.4 GHz).'],
+      ['Deauthentication', 'Rozłączanie wybranych urządzeń ramkami deauth — główna funkcja projektu.'],
+      ['Fake Networks', 'Tworzenie dziesiątek fałszywych AP (beacon flood), aby zmylić skanery i użytkowników.'],
+      ['Probe Flood', 'Wysyłanie fałszywych probe requestów, które mylą trackery Wi-Fi.'],
+      ['Web / Serial UI', 'Panel webowy i interfejs szeregowy; AP `pwned` z hasłem `deauther`.'],
+      ['Cel edukacyjny', 'Proof of concept do nauki o Wi-Fi i mikrokontrolerach. Używaj wyłącznie na własnym sprzęcie i zgodnie z prawem lokalnym.'],
+    ],
+    tags: ['ESP8266', 'Wemos D1 Mini', 'Deauther', '802.11', 'Deauth', 'Beacon Flood', 'Probe Flood', 'Web UI', '0x0'],
+  },
 ];
 
 const PINOUTS = {
@@ -385,7 +407,7 @@ function renderFirmwareHub() {
     grid.innerHTML = `
       <div class="hub-empty">
         <strong>Brak pasujących plików firmware</strong>
-        <span>Zmień zapytanie w wyszukiwarce lub zmień filtr płytki.</span>
+        <span>Zmień zapytanie w wyszukiwarce lub filtr płytki.</span>
       </div>
     `;
     return;
@@ -807,10 +829,6 @@ function init() {
   });
 
   // Firmware Hub search/filter
-  // Custom firmware upload disabled
-
-
-
   $('#hubSearch').addEventListener('input', (e) => {
     state.hubQuery = e.target.value;
     renderFirmwareHub();

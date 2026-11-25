@@ -20,7 +20,7 @@ export const BOARD_SPECS = {
   },
   d1mini: {
     label: 'Wemos D1 Mini',
-    chip: 'ESP32 / ESP-12F',
+    chip: 'ESP8266 ESP-12F / ESP32',
     hasLcd: false,
   },
   waveshare147: {
