@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>VO!DSOFT — ESP32 Flasher</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -21,25 +21,49 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Splash Screen -->
+  <!-- Splash Screen: Flying Letters + Lightning + Intro Synth -->
   <div class="splash-screen" id="splashScreen" aria-label="Ładowanie VO!DSOFT">
+    <div class="splash-flash" aria-hidden="true"></div>
     <div class="splash-shockwave" aria-hidden="true"></div>
+
+    <!-- Animated Lightning Bolts -->
+    <svg class="splash-bolt bolt-left" viewBox="0 0 120 260" fill="none" aria-hidden="true">
+      <polyline points="82,4 38,108 74,116 26,252" stroke="#22d3ee" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <polyline points="74,116 98,176" stroke="#d9f99d" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+    <svg class="splash-bolt bolt-right" viewBox="0 0 120 260" fill="none" aria-hidden="true">
+      <polyline points="38,4 84,102 48,112 96,252" stroke="#d9f99d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <polyline points="48,112 22,174" stroke="#22d3ee" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+
     <div class="splash-inner">
       <div class="splash-logo">
-        <svg viewBox="0 0 120 120" width="96" height="96" fill="none">
+        <svg viewBox="0 0 120 120" width="104" height="104" fill="none">
           <defs>
             <linearGradient id="voidGrad" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
               <stop offset="0%" stop-color="#d9f99d"/>
               <stop offset="100%" stop-color="#22d3ee"/>
             </linearGradient>
           </defs>
-          <polygon class="splash-hex" points="60,6 110,33 110,87 60,114 10,87 10,33" stroke="url(#voidGrad)" stroke-width="3" fill="rgba(217,249,157,0.04)"/>
+          <polygon class="splash-hex" points="60,6 110,33 110,87 60,114 10,87 10,33" stroke="url(#voidGrad)" stroke-width="3.2" fill="rgba(217,249,157,0.05)"/>
           <path class="splash-v" d="M31 36L51 84L61 58" stroke="#fafafa" stroke-width="7" stroke-linecap="square" stroke-linejoin="miter"/>
           <path class="splash-bang" d="M77 32V68" stroke="#d9f99d" stroke-width="8" stroke-linecap="square"/>
           <rect class="splash-dot" x="72" y="76" width="10" height="10" fill="#22d3ee"/>
         </svg>
       </div>
-      <div class="splash-wordmark">VO<span>!</span>DSOFT</div>
+
+      <div class="splash-wordmark" aria-label="VO!DSOFT">
+        <span class="fly-letter" style="--dx:-180px; --dy:-90px; --rz:-28deg; --d:0.12s">V</span>
+        <span class="fly-letter" style="--dx:-90px; --dy:120px; --rz:22deg; --d:0.20s">O</span>
+        <span class="fly-letter bang" style="--dx:0px; --dy:-160px; --rz:0deg; --d:0.30s">!</span>
+        <span class="fly-letter" style="--dx:110px; --dy:-100px; --rz:24deg; --d:0.38s">D</span>
+        <span class="fly-letter" style="--dx:-140px; --dy:80px; --rz:-18deg; --d:0.46s">S</span>
+        <span class="fly-letter" style="--dx:60px; --dy:130px; --rz:16deg; --d:0.54s">O</span>
+        <span class="fly-letter" style="--dx:160px; --dy:-60px; --rz:-22deg; --d:0.62s">F</span>
+        <span class="fly-letter" style="--dx:200px; --dy:90px; --rz:26deg; --d:0.70s">T</span>
+      </div>
+
+      <div class="splash-sub">ESP32 // 3D WEB SERIAL STUDIO</div>
       <div class="splash-bar"><div class="splash-bar-fill"></div></div>
     </div>
   </div>
@@ -78,7 +102,6 @@
     </nav>
 
     <div class="header-actions">
-      <button class="btn btn-sm btn-ghost sfx-btn active" id="sfxBtn" title="Dźwięki UI">🔊</button>
       <div class="conn-pill" id="connPill">
         <span class="pulse-dot" id="connDot"></span>
         <span id="connLabel">OFFLINE</span>
@@ -91,6 +114,15 @@
   <main class="shell">
     <!-- PAGE 1: FLASHER 3D -->
     <section class="page active" id="page-flasher">
+      <!-- Intuitive 3-Step Flow Strip -->
+      <div class="quick-steps" aria-label="Kroki flashowania">
+        <div class="q-step active" id="qStep1"><span>1</span> Wybierz płytkę</div>
+        <div class="q-arrow">→</div>
+        <div class="q-step" id="qStep2"><span>2</span> Dodaj .bin</div>
+        <div class="q-arrow">→</div>
+        <div class="q-step" id="qStep3"><span>3</span> Kliknij ⚡ Flash</div>
+      </div>
+
       <div class="flasher-grid">
         <!-- LEFT: 3D Hardware Stage + Progress + Actions -->
         <div class="col-stack">
@@ -238,7 +270,10 @@
                 <span class="eyebrow-dot cyan"></span>
                 <h2>Firmware (.bin)</h2>
               </div>
-              <span class="meta-chip" id="partCountSummary">0 plików</span>
+              <div class="console-head-right">
+                <button type="button" class="btn btn-sm btn-ghost" id="goHubBtn">◈ Z Hubu</button>
+                <span class="meta-chip" id="partCountSummary">0 plików</span>
+              </div>
             </div>
 
             <div class="dropzone" id="dropzone">

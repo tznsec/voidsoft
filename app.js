@@ -195,9 +195,22 @@ const monitorOutput = $('#monitorOutput');
 function initSplash() {
   const splash = $('#splashScreen');
   if (!splash) return;
+
   const dismiss = () => splash.classList.add('hidden');
+
+  // Play synthwave intro by default; if autoplay-blocked, play silently on first gesture
+  sfx.introMusic(false);
+
+  const unlockHandler = () => {
+    if (!sfx.introPlayed) sfx.introMusic(false);
+    window.removeEventListener('pointerdown', unlockHandler);
+    window.removeEventListener('keydown', unlockHandler);
+  };
+  window.addEventListener('pointerdown', unlockHandler, { once: true });
+  window.addEventListener('keydown', unlockHandler, { once: true });
+
   splash.addEventListener('click', dismiss);
-  setTimeout(dismiss, 1450);
+  setTimeout(dismiss, 2400);
 }
 
 function updateNavIndicator() {
@@ -308,12 +321,22 @@ function selectBoard(boardKey) {
   logFlash(`[3D] ${spec.label}`, 'info');
 }
 
+function updateQuickSteps() {
+  const hasFiles = state.partitions.length > 0;
+  $('#qStep1')?.classList.toggle('done', true);
+  $('#qStep2')?.classList.toggle('done', hasFiles);
+  $('#qStep2')?.classList.toggle('active', !hasFiles);
+  $('#qStep3')?.classList.toggle('active', hasFiles);
+  $('#qStep3')?.classList.toggle('done', state.progress === 100);
+}
+
 function renderPartitions() {
   partitionList.innerHTML = '';
   const totalBytes = state.partitions.reduce((s, p) => s + p.sizeBytes, 0);
   partCountSummary.textContent = state.partitions.length
     ? `${state.partitions.length} • ${formatBytes(totalBytes)}`
     : '0 plików';
+  updateQuickSteps();
 
   state.partitions.forEach((part, idx) => {
     const row = document.createElement('div');
@@ -725,7 +748,16 @@ function init() {
   drawSparkline();
   syncConnectionUI();
 
-  logFlash('[VO!DSOFT] Gotowy.', 'ok');
+  $('#goHubBtn')?.addEventListener('click', () => {
+    sfx.click(560);
+    switchPage('library');
+  });
+
+  if (!('serial' in navigator)) {
+    logFlash('[INFO] Web Serial niedostępny w tej przeglądarce (na PC użyj Chrome/Edge). Możesz przeglądać 3D, Firmware Hub i Pinout.', 'warn');
+  } else {
+    logFlash('[VO!DSOFT] Gotowy.', 'ok');
+  }
 
   try {
     state.viewer3d = new Board3DViewer($('#viewport3d'));
@@ -741,12 +773,6 @@ function init() {
   });
   window.addEventListener('resize', updateNavIndicator);
   requestAnimationFrame(updateNavIndicator);
-
-  $('#sfxBtn').addEventListener('click', (e) => {
-    const on = sfx.toggle();
-    e.currentTarget.textContent = on ? '🔊' : '🔇';
-    e.currentTarget.classList.toggle('active', on);
-  });
 
   $$('.cam-btn[data-cam]').forEach((btn) => {
     btn.addEventListener('click', () => {
