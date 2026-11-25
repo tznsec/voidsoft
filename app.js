@@ -385,7 +385,7 @@ function renderFirmwareHub() {
     grid.innerHTML = `
       <div class="hub-empty">
         <strong>Brak pasujących plików firmware</strong>
-        <span>Zmień zapytanie w wyszukiwarce lub dodaj własny plik .bin.</span>
+        <span>Zmień zapytanie w wyszukiwarce lub zmień filtr płytki.</span>
       </div>
     `;
     return;
@@ -806,10 +806,10 @@ function init() {
     handleFiles(e.dataTransfer.files, 'flasher');
   });
 
-  // Firmware Hub real file upload & search/filter
-  const hubFileInput = $('#hubFileInput');
-  $('#hubAddBtn').addEventListener('click', () => hubFileInput.click());
-  hubFileInput.addEventListener('change', (e) => handleFiles(e.target.files, 'hub'));
+  // Firmware Hub search/filter
+  // Custom firmware upload disabled
+
+
 
   $('#hubSearch').addEventListener('input', (e) => {
     state.hubQuery = e.target.value;
