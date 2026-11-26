@@ -1238,6 +1238,12 @@ input[type="text"]:focus { border-color: var(--lime); }
   border: 1px solid var(--border);
 }
 
+.software-intro {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
 /* ==========================================================================
    EPIC SPLASH: FLYING LETTERS + LIGHTNING BOLTS + MOBILE/PC RESPONSIVE UX
    ========================================================================== */
@@ -1463,7 +1469,7 @@ input {
     order: 3;
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   .nav-indicator {

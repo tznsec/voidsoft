@@ -72,6 +72,28 @@ const CATALOG_FIRMWARES = [
   },
 ];
 
+const CATALOG_SOFTWARE = [
+  {
+    id: 'voidecho-psp-3004',
+    title: 'VoidEcho // PSP-3004',
+    author: 'by VO!DSOFT (PSP-3004 / ARK-5)',
+    platform: 'Sony PSP-3004 / ARK-5',
+    filename: 'VoidEcho_PSP_EBOOT.PBP',
+    url: './software/VoidEcho_PSP_EBOOT.PBP',
+    sizeBytes: 3149497,
+    summary:
+      'Jednoekranowy skaner ataków Wi-Fi dla PSP-3004 z CFW ARK-5. Skanuje sieci 2.4 GHz i wykrywa oznaki ataku: zanik AP oraz nagły spadek RSSI. Polskie UI i muzyka w tle.',
+    features: [
+      ['Jeden ekran', 'Lista sieci (SSID, sygnał %, kanał, ENC/OPN), BSSID i RSSI w dBm oraz panel alertów z historią zdarzeń.'],
+      ['Wykrywanie pośrednie', 'Porównanie BSSID i RSSI między skanami: ZNIK AP, RSSI-% i POWROT. PSP nie ma raw monitora 802.11.'],
+      ['Auto-skan 1–30 s', 'Domyślnie co 30 s. X wymusza skan natychmiast, R + ↑/↓ zmienia interwał.'],
+      ['Muzyka w tle', 'Utwór wbudowany w EBOOT i zapętlony; START włącza/wyłącza odtwarzanie.'],
+      ['Instalacja', 'Skopiuj plik na ms0:/PSP/GAME/VoidEcho/EBOOT.PBP i uruchom z menu PSP.'],
+    ],
+    tags: ['PSP-3004', 'ARK-5', 'Wi-Fi 2.4 GHz', 'Deauth Detector', 'UI PL', 'Muzyka', 'EBOOT.PBP'],
+  },
+];
+
 const PINOUTS = {
   cyd: {
     title: 'CYD 2432S024 / S028',
@@ -527,6 +549,39 @@ function renderFirmwareHub() {
   });
 }
 
+function renderSoftwareHub() {
+  const grid = $('#softwareGrid');
+  if (!grid) return;
+
+  grid.innerHTML = CATALOG_SOFTWARE.map((app) => `
+    <div class="fw-card-rich">
+      <div>
+        <div class="fw-header">
+          <div>
+            <div class="fw-author">${app.author}</div>
+            <h3 class="fw-title">${app.title}</h3>
+          </div>
+          <span class="badge-chip">${app.platform}</span>
+        </div>
+        <p class="fw-summary">${app.summary}</p>
+      </div>
+      <ul class="fw-features">
+        ${app.features.map(([k, v]) => `<li><strong>${k}:</strong> ${v}</li>`).join('')}
+      </ul>
+      <div class="fw-tags">
+        ${app.tags.map((t) => `<span class="fw-tag">${t}</span>`).join('')}
+      </div>
+      <div class="fw-specs">
+        <span>Plik: ${app.filename}</span>
+        <span>Rozmiar: ${formatBytes(app.sizeBytes)}</span>
+      </div>
+      <div class="action-row">
+        <a class="btn btn-lime" href="${app.url}" download="${app.filename}">⬇ Pobierz EBOOT</a>
+      </div>
+    </div>
+  `).join('');
+}
+
 // ============================================================================
 // REAL WEB SERIAL CONNECTION & ESPTOOL-JS FLASHING
 // ============================================================================
@@ -744,6 +799,7 @@ function init() {
   initSpotlightCards();
   renderPartitions();
   renderFirmwareHub();
+  renderSoftwareHub();
   renderPinout('cyd');
   drawSparkline();
   syncConnectionUI();

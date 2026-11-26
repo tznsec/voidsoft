@@ -99,6 +99,7 @@
       <button class="nav-btn" data-page-target="library">◈ Firmware</button>
       <button class="nav-btn" data-page-target="pinout">⊞ Pinout</button>
       <button class="nav-btn" data-page-target="monitor">▸_ Monitor</button>
+      <button class="nav-btn" data-page-target="software">▦ Inne soft</button>
     </nav>
 
     <div class="header-actions">
@@ -372,6 +373,23 @@
           <input type="text" id="monitorInput" placeholder="Komenda UART..." autocomplete="off" />
           <button type="submit" class="btn btn-lime">Wyślij ↵</button>
         </form>
+      </div>
+    </section>
+
+    <!-- PAGE 5: OTHER SOFTWARE (PSP, itd.) -->
+    <section class="page" id="page-software">
+      <div class="card spotlight-card">
+        <div class="card-head">
+          <div class="head-title">
+            <span class="eyebrow-dot cyan"></span>
+            <h2>Inne soft</h2>
+          </div>
+          <span class="badge-chip">Poza ESP32</span>
+        </div>
+        <p class="software-intro">
+          Aplikacje i narzędzia dla innego sprzętu. Na razie nasz skaner dla PSP-3004 — pliki do pobrania są hostowane bezpośrednio tutaj, bez OTA.
+        </p>
+        <div class="firmware-grid" id="softwareGrid"></div>
       </div>
     </section>
   </main>
